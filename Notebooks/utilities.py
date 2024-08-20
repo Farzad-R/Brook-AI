@@ -6,9 +6,11 @@ Functions include:
 3. `_print_event`: Prints the current state and messages of an event, with optional truncation for long messages.
 """
 
+from typing import Callable
 from langchain_core.messages import ToolMessage
 from langchain_core.runnables import RunnableLambda
 from langgraph.prebuilt import ToolNode
+from build_agent_state import State
 
 
 def handle_tool_error(state) -> dict:
@@ -80,3 +82,43 @@ def _print_event(event: dict, _printed: set, max_length=1500):
                 msg_repr = msg_repr[:max_length] + " ... (truncated)"
             print(msg_repr)
             _printed.add(message.id)
+
+
+def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
+    """
+    Creates an entry node function for transitioning the dialog state within a conversation.
+
+    Args:
+        assistant_name (str): The name of the assistant to be referenced in the tool message.
+        new_dialog_state (str): The new state of the dialog after the transition.
+
+    Returns:
+        Callable: A function that, when called with a `State` object, returns a dictionary containing a tool message 
+                  and the updated dialog state.
+
+    The returned `entry_node` function performs the following:
+        - Extracts the `tool_call_id` from the last message's first tool call in the `State`.
+        - Constructs a tool message informing the user that the assistant is now acting as the specified `assistant_name`.
+        - Updates the dialog state to the provided `new_dialog_state`.
+        - The tool message instructs the assistant on how to proceed with the user's intent, emphasizing that the task 
+          is incomplete until the appropriate tool is successfully invoked.
+        - If the user changes their mind or needs additional help, the message advises calling the `CompleteOrEscalate` 
+          function to allow the primary assistant to regain control.
+    """
+    def entry_node(state: State) -> dict:
+        tool_call_id = state["messages"][-1].tool_calls[0]["id"]
+        return {
+            "messages": [
+                ToolMessage(
+                    content=f"The assistant is now the {assistant_name}. Reflect on the above conversation between the host assistant and the user."
+                    f" The user's intent is unsatisfied. Use the provided tools to assist the user. Remember, you are {assistant_name},"
+                    " and the booking, update, other other action is not complete until after you have successfully invoked the appropriate tool."
+                    " If the user changes their mind or needs help for other tasks, call the CompleteOrEscalate function to let the primary host assistant take control."
+                    " Do not mention who you are - just act as the proxy for the assistant.",
+                    tool_call_id=tool_call_id,
+                )
+            ],
+            "dialog_state": new_dialog_state,
+        }
+
+    return entry_node

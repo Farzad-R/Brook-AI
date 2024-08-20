@@ -3,10 +3,47 @@ Lookup Company Policies (RAG):
 
 The assistant retrieve policy information to answer user questions. Note that enforcement of these policies still must be done within the tools/APIs themselves, since the LLM can always ignore this.
 """
-
+import re
+import requests
 import numpy as np
-import openai
-from langchain_core.tools import tool
+from load_config import LoadDirectoriesConfig, LoadOpenAIConfig
+
+CFG_OPENAI = LoadOpenAIConfig()
+CFG_DIRECTORIES = LoadDirectoriesConfig()
+
+
+def load_swiss_faq():
+    """
+    Fetches and processes the Swiss FAQ document from a remote URL.
+
+    This function performs the following steps:
+    1. Retrieves the FAQ text from a URL specified in the configuration.
+    2. Splits the FAQ text into separate sections based on the section headers.
+    3. Returns the processed FAQ sections as a list of dictionaries, where each dictionary
+       contains the text of one section.
+
+    The URL for the FAQ document is obtained from the `CFG.swiss_faq_url` configuration setting.
+
+    Returns:
+        list[dict]: A list of dictionaries where each dictionary represents a section of the FAQ. 
+        Each dictionary has a single key:
+            - "page_content": The text content of the FAQ section.
+
+    Raises:
+        requests.HTTPError: If the request to fetch the FAQ document fails.
+        ValueError: If the FAQ content cannot be parsed correctly.
+    """
+
+    # Fetch the FAQ text from a remote URL
+    response = requests.get(
+        CFG_DIRECTORIES.swiss_faq_url
+    )
+    response.raise_for_status()
+    faq_text = response.text
+
+    # Split the FAQ text into separate documents based on section headers
+    docs = [{"page_content": txt} for txt in re.split(r"(?=\n##)", faq_text)]
+    return docs
 
 
 class VectorStoreRetriever:
@@ -53,7 +90,8 @@ class VectorStoreRetriever:
             VectorStoreRetriever: An instance of the retriever with documents and their embeddings.
         """
         embeddings = oai_client.embeddings.create(
-            model="text-embedding-3-small", input=[doc["page_content"] for doc in docs]
+            model=CFG_OPENAI.embedding_model, input=[
+                doc["page_content"] for doc in docs]
         )
         vectors = [emb.embedding for emb in embeddings.data]
         return cls(docs, vectors, oai_client)
@@ -74,7 +112,7 @@ class VectorStoreRetriever:
                         including the document's content and its similarity score.
         """
         embed = self._client.embeddings.create(
-            model="text-embedding-3-small", input=[query]
+            model=CFG_OPENAI.embedding_model, input=[query]
         )
         # "@" is just a matrix multiplication in python
         scores = np.array(embed.data[0].embedding) @ self._arr.T
@@ -83,29 +121,3 @@ class VectorStoreRetriever:
         return [
             {**self._docs[idx], "similarity": scores[idx]} for idx in top_k_idx_sorted
         ]
-
-
-@tool
-def lookup_policy(query: str, retriever) -> str:
-    """Consult the company policies to check whether certain options are permitted.
-    Use this before making any flight changes performing other 'write' events."""
-    docs = retriever.query(query, k=2)
-    return "\n\n".join([doc["page_content"] for doc in docs])
-
-
-"""
-lookup_policy full docstring:
------------------------------
-    Consults company policies to check whether certain options are permitted.
-
-    Uses the retriever to find and return the most relevant sections of the FAQ document that
-    pertain to the given query. This is useful for checking policy details before making changes
-    or performing write events.
-
-    Parameters:
-        query (str): The query string to look up in the company policies.
-        retriever: An instance of VectorStoreRetriever class.
-
-    Returns:
-        str: A string containing the contents of the most relevant sections of the FAQ document.
-"""

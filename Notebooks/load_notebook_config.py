@@ -29,6 +29,7 @@ class LoadOpenAIConfig:
 class LoadRAGConfig:
     def __init__(self) -> None:
         self.k = app_config["RAG"]["k"]
+        self.tavily_search_max_results = app_config["RAG"]["tavily_search_max_results"]
 
 
 class LoadConfig:

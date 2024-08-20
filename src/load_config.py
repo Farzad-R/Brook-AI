@@ -2,61 +2,38 @@ import os
 from dotenv import load_dotenv
 import yaml
 from pyprojroot import here
-import shutil
 from langchain_openai import ChatOpenAI
 load_dotenv()
 
+with open(here("configs/config.yml")) as cfg:
+    app_config = yaml.load(cfg, Loader=yaml.FullLoader)
 
-class LoadConfig:
+
+class LoadDirectoriesConfig:
     def __init__(self) -> None:
-        with open(here("configs/config.yml")) as cfg:
-            app_config = yaml.load(cfg, Loader=yaml.FullLoader)
-        # Load OpenAI credentials
-        self.load_openai_cfg()
-
         # Databases directories
-        self.local_file = app_config["directories"]["local_file"]
-        self.backup_file = app_config["directories"]["backup_file"]
-
+        self.local_file = here(app_config["directories"]["local_file"])
+        self.backup_file = here(app_config["directories"]["backup_file"])
         # Databases URLs
         self.swiss_faq_url = app_config["urls"]["swiss_faq_url"]
         self.travel_db_url = app_config["urls"]["travel_db_url"]
 
-        # LLM
-        self.llm = ChatOpenAI(model=app_config["llm"]["model"])
 
-    def load_openai_cfg(self):
+class LoadOpenAIConfig:
+    def __init__(self) -> None:
         os.environ['OPENAI_API_KEY'] = os.getenv("OPEN_AI_API_KEY")
+        self.llm = ChatOpenAI(model=app_config["openai_models"]["model"])
+        self.embedding_model = app_config["openai_models"]["embedding_model"]
 
-    def create_directory(self, directory_path: str):
-        """
-        Create a directory if it does not exist.
 
-        Parameters:
-            directory_path (str): The path of the directory to be created.
-        """
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
+class LoadRAGConfig:
+    def __init__(self) -> None:
+        self.k = app_config["RAG"]["k"]
+        self.tavily_search_max_results = app_config["RAG"]["tavily_search_max_results"]
 
-    def remove_directory(self, directory_path: str):
-        """
-        Removes the specified directory.
 
-        Parameters:
-            directory_path (str): The path of the directory to be removed.
-
-        Raises:
-            OSError: If an error occurs during the directory removal process.
-
-        Returns:
-            None
-        """
-        if os.path.exists(directory_path):
-            try:
-                shutil.rmtree(directory_path)
-                print(
-                    f"The directory '{directory_path}' has been successfully removed.")
-            except OSError as e:
-                print(f"Error: {e}")
-        else:
-            print(f"The directory '{directory_path}' does not exist.")
+class LoadConfig:
+    def __init__(self) -> None:
+        os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_PROJECT"] = "Brook AI"

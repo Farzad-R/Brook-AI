@@ -9,11 +9,10 @@ from typing import Optional
 import pytz
 from langchain_core.runnables import ensure_config
 from langchain_core.tools import tool
-from load_config import LoadConfig
-
-CFG = LoadConfig()
+from load_config import LoadDirectoriesConfig
+CFG_DIRECTORIES = LoadDirectoriesConfig()
 # database will be used throughout this module in flight methods
-db = CFG.local_file
+db = CFG_DIRECTORIES.local_file
 
 
 @tool
@@ -57,33 +56,6 @@ def fetch_user_flight_information() -> list[dict]:
     return results
 
 
-"""
-fetch_user_flight_information full description:
------------------------------------------------
-    Fetches all tickets for the user along with corresponding flight information and seat assignments.
-
-    This function retrieves ticket details, associated flight details, and seat assignments for all
-    tickets belonging to the currently configured user. It connects to a SQLite database, queries
-    the relevant tables, and returns the data as a list of dictionaries.
-
-    Returns:
-        list[dict]: A list of dictionaries where each dictionary contains:
-            - ticket_no: The ticket number.
-            - book_ref: The booking reference.
-            - flight_id: The flight identifier.
-            - flight_no: The flight number.
-            - departure_airport: The departure airport code.
-            - arrival_airport: The arrival airport code.
-            - scheduled_departure: The scheduled departure time of the flight.
-            - scheduled_arrival: The scheduled arrival time of the flight.
-            - seat_no: The seat number assigned to the ticket.
-            - fare_conditions: The fare conditions for the ticket.
-
-    Raises:
-        ValueError: If no passenger ID is configured in the context.
-    """
-
-
 @tool
 def search_flights(
     departure_airport: Optional[str] = None,
@@ -92,7 +64,19 @@ def search_flights(
     end_time: Optional[date | datetime] = None,
     limit: int = 20,
 ) -> list[dict]:
-    """Search for flights based on departure airport, arrival airport, and departure time range."""
+    """Search for flights based on departure airport, arrival airport, and departure time range.
+
+    Args:
+        departure_airport (Optional[str]): The airport code from which the flight is departing.
+        arrival_airport (Optional[str]): The airport code where the flight is arriving.
+        start_time (Optional[date | datetime]): The earliest departure time to filter flights.
+        end_time (Optional[date | datetime]): The latest departure time to filter flights.
+        limit (int): The maximum number of flights to return. Defaults to 20.
+
+    Returns:
+        list[dict]: A list of dictionaries where each dictionary contains the details of a flight
+            including all columns from the flights table.
+    """
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
 
@@ -127,33 +111,18 @@ def search_flights(
     return results
 
 
-"""
-search_flights full description:
----------------------------------
-    Searches for flights based on departure airport, arrival airport, and departure time range.
-
-    This function queries the SQLite database for flights that match the specified criteria and
-    returns a list of flights sorted according to the provided filters.
-
-    Args:
-        departure_airport (Optional[str]): The airport code from which the flight is departing.
-        arrival_airport (Optional[str]): The airport code where the flight is arriving.
-        start_time (Optional[date | datetime]): The earliest departure time to filter flights.
-        end_time (Optional[date | datetime]): The latest departure time to filter flights.
-        limit (int): The maximum number of flights to return. Defaults to 20.
-
-    Returns:
-        list[dict]: A list of dictionaries where each dictionary contains the details of a flight
-            including all columns from the `flights` table.
-
-    Raises:
-        sqlite3.DatabaseError: If there is an issue with reading from the SQLite database.
-    """
-
-
 @tool
 def update_ticket_to_new_flight(ticket_no: str, new_flight_id: int) -> str:
-    """Update the user's ticket to a new valid flight."""
+    """Update the user's ticket to a new valid flight.
+
+    Args:
+        ticket_no (str): The ticket number to be updated.
+        new_flight_id (int): The ID of the new flight to which the ticket should be updated.
+
+    Returns:
+        str: A message indicating whether the ticket was successfully updated or if there were errors
+            such as an invalid flight ID, the flight being too soon, or the user not owning the ticket.
+    """
     config = ensure_config()
     configuration = config.get("configurable", {})
     passenger_id = configuration.get("passenger_id", None)
@@ -220,32 +189,17 @@ def update_ticket_to_new_flight(ticket_no: str, new_flight_id: int) -> str:
     return "Ticket successfully updated to new flight."
 
 
-"""
-update_ticket_to_new_flight full description:
-----------------------------------------------
-    Updates the user's ticket to a new valid flight.
-
-    This function updates the flight associated with a specific ticket number to a new flight ID.
-    It ensures that the new flight ID is valid and that the current user owns the ticket. It also
-    checks that the new flight's departure time is at least 3 hours from the current time.
-
-    Args:
-        ticket_no (str): The ticket number to be updated.
-        new_flight_id (int): The ID of the new flight to which the ticket should be updated.
-
-    Returns:
-        str: A message indicating whether the ticket was successfully updated or if there were errors
-            such as an invalid flight ID, the flight being too soon, or the user not owning the ticket.
-
-    Raises:
-        ValueError: If no passenger ID is configured in the context.
-        sqlite3.DatabaseError: If there is an issue with reading or updating the SQLite database.
-"""
-
-
 @tool
 def cancel_ticket(ticket_no: str) -> str:
-    """Cancel the user's ticket and remove it from the database."""
+    """Cancel the user's ticket and remove it from the database.
+
+    Args:
+        ticket_no (str): The ticket number to be cancelled.
+
+    Returns:
+        str: A message indicating whether the ticket was successfully cancelled or if there were errors
+            such as no existing ticket being found or the user not owning the ticket.
+    """
     config = ensure_config()
     configuration = config.get("configurable", {})
     passenger_id = configuration.get("passenger_id", None)
@@ -282,25 +236,3 @@ def cancel_ticket(ticket_no: str) -> str:
     cursor.close()
     conn.close()
     return "Ticket successfully cancelled."
-
-
-"""
-Cancel_ticket full description:
---------------------------------
-    Cancels the user's ticket and removes it from the database.
-
-    This function removes a specified ticket from the database, including its associations with
-    flights and other related tables. It ensures that the current user owns the ticket before performing
-    the cancellation.
-
-    Args:
-        ticket_no (str): The ticket number to be cancelled.
-
-    Returns:
-        str: A message indicating whether the ticket was successfully cancelled or if there were errors
-            such as no existing ticket being found or the user not owning the ticket.
-
-    Raises:
-        ValueError: If no passenger ID is configured in the context.
-        sqlite3.DatabaseError: If there is an issue with reading or deleting from the SQLite database.
-"""

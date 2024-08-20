@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import requests
 from pyprojroot import here
-from load_notebook_config import LoadDirectoriesConfig
+from load_config import LoadDirectoriesConfig
 CFG_DIRECTORIES = LoadDirectoriesConfig()
 
 

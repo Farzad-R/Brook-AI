@@ -13,3 +13,4 @@ openai_models:
 
 RAG:
   k: 2
+  tavily_search_max_results: 1

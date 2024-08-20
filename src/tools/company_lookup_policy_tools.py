@@ -1,5 +1,5 @@
 
-from company_policies_agentic_RAG_prep import load_swiss_faq, VectorStoreRetriever
+from RAG.company_policies_agentic_RAG_prep import load_swiss_faq, VectorStoreRetriever
 import openai
 from langchain_core.tools import tool
 from load_config import LoadRAGConfig
