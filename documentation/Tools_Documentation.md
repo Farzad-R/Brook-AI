@@ -1,5 +1,5 @@
 
-# Lookup Company Policies (RAG) Tools Description:
+# Lookup Company Policies (for RAG) Tools Description:
 
 The assistant retrieve policy information to answer user questions. Note that enforcement of these policies still must be done within the tools/APIs themselves, since the LLM can always ignore this.
 
