@@ -10,13 +10,15 @@ with gr.Blocks() as demo:
             # First ROW:
             ##############
             with gr.Row() as row_one:
+
                 chatbot = gr.Chatbot(
-                    [],
+                    value=[
+                        [None, "Hello! I'm Brook AI, TravelEase's AI agent. How can I help you today?"]],
                     elem_id="chatbot",
                     bubble_full_width=False,
-                    # height=500,
+                    height=500,
                     avatar_images=(
-                        ("images/user.jpg"), "images/chatbot.png")
+                        ("images/user.jpg"), "images/chatbot.png"),
                 )
                 # **Adding like/dislike icons
                 chatbot.like(UISettings.feedback, None, None)

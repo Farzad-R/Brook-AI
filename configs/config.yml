@@ -7,10 +7,14 @@ urls:
   swiss_faq_url: https://storage.googleapis.com/benchmarks-artifacts/travel-db/swiss_faq.md
 
 openai_models:
-  # model: gpt-4-turbo
-  model: gpt-3.5-turbo-0125
+  model: gpt-4-turbo
+  # model: gpt-3.5-turbo-0125
   embedding_model: text-embedding-3-small
 
 RAG:
   k: 2
   tavily_search_max_results: 1
+
+langsmith:
+  tracing: "true"
+  project_name: "Brook AI"

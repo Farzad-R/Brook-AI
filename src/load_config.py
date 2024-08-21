@@ -35,5 +35,5 @@ class LoadRAGConfig:
 class LoadConfig:
     def __init__(self) -> None:
         os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
-        os.environ["LANGCHAIN_TRACING_V2"] = "true"
-        os.environ["LANGCHAIN_PROJECT"] = "Brook AI"
+        os.environ["LANGCHAIN_TRACING_V2"] = app_config["langsmith"]["tracing"]
+        os.environ["LANGCHAIN_PROJECT"] = app_config["langsmith"]["project_name"]
