@@ -14,9 +14,9 @@ with gr.Blocks() as demo:
                     [],
                     elem_id="chatbot",
                     bubble_full_width=False,
-                    height=500,
+                    # height=500,
                     avatar_images=(
-                        ("images/user.png"), "images/chatbot.png")
+                        ("images/user.jpg"), "images/chatbot.png")
                 )
                 # **Adding like/dislike icons
                 chatbot.like(UISettings.feedback, None, None)
@@ -25,7 +25,7 @@ with gr.Blocks() as demo:
             ##############
             with gr.Row():
                 input_txt = gr.Textbox(
-                    lines=4,
+                    lines=2,
                     scale=8,
                     placeholder="Enter text and press enter, or upload PDF files",
                     container=False,
