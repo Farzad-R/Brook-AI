@@ -8,7 +8,7 @@ from load_config import LoadConfig
 CFG = LoadConfig()
 
 
-def download_data(overwrite=False):
+def download_travel_data(overwrite=False):
     """
     Downloads a SQLite database file from a remote URL, updates its datetime values, and saves it locally.
 

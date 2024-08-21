@@ -1,19 +1,20 @@
 Sample User Conversation
 -------------------------
-- Hi there, I want the info of my flight
-- What does CDG mean?
+Hi there, I want the info of my flight
 
-- Am I allowed to update my flight to something sooner? I want to leave later today
-- Great. What are the other available flights from CDG to BSL
-- Change my flight to Flight Number: LX0112 Scheduled Departure: May 20, 2024, at 12:09 PM
+What does CDG mean? where can I find more info about it?
 
-- Ok, I want to see my options for booking a hotel for 7 days
-- Reserve Hilton Basel for my 7 days stay
-- Now for a car, what are my options when I arrived at my destination?
-- Book a rental car from Avis for me
-- Nice. Tell me the full info of my hotel and rented car
+According the swiss airlines policy, can I cancel my ticket?
 
-- Cool so now what recommendations do you have on excursions?
-- Are they available while I'm there?
-- Interesting - I like the museums, what options are there?
-- OK great pick one and book it for my second day there
+Ok, I want to see my options for booking a hotel for 7 days
+Reserve Hilton Basel for my 7 days stay",
+Now for a car, what are my options when I arrived at my destination?
+Book a rental car from Avis for me
+Nice. Tell me the full info of my hotel and rented car
+
+Now give me the full information of the hotel and the car that you rented for me
+
+Cool so now what recommendations do you have on excursions?
+Are they available while I'm there?
+Interesting - I like the museums, what options are there?
+OK great pick one and book it for my second day there

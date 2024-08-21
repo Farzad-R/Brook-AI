@@ -2,14 +2,22 @@ import uuid
 import shutil
 from agentic_system_design.construct_graph import BrookAIGraph
 from load_config import LoadDirectoriesConfig
-from langchain_core.messages import ToolMessage
 from utils.utilities import _print_event
 from typing import List, Tuple
-
+from download_data import download_travel_data
+import os
 
 CFG_DIRECTORIES = LoadDirectoriesConfig()
 db = CFG_DIRECTORIES.local_file
 backup_file = CFG_DIRECTORIES.backup_file
+
+# Check if the database and backup files exist
+db_exists = os.path.exists(db)
+backup_file_exists = os.path.exists(backup_file)
+
+# If either file does not exist, call the download function
+if not db_exists or not backup_file_exists:
+    download_travel_data()
 
 graph_instance = BrookAIGraph()
 graph = graph_instance.Compile_graph()
