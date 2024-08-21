@@ -1,5 +1,5 @@
 """
-This time we will create an assistant for every workflow. That means:
+Here, we will create an assistant for every workflow.
 
 1. Flight booking assistant
 2. Hotel booking assistant

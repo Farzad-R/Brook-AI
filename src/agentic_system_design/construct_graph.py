@@ -1,16 +1,11 @@
 """
-we'll start with a node to pre-populate the state with the user's current information.
+Here, we'll create our specialized workflows. Each mini-workflow consists of 5 nodes and resembles the full graph from Part 3:
 
-Now we'll start adding our specialized workflows. Each mini-workflow looks very similar to our full graph in Part 3, employing 5 nodes:
-
-1. enter_*: use the create_entry_node utility you defined above to add a ToolMessage signaling that the new specialized assistant is at the helm
-2. Assistant: the prompt + llm combo that takes in the current state and either uses a tool, asks a question of the user, or ends the workflow (return to the primary assistant)
-3. *_safe_tools: "read-only" tools the assistant can use without user confirmation.
-4. *_sensitive_tools: tools with "write" access that require user confirmation (and will be assigned an interrupt_before when we compile the graph)
-5. leave_skill: pop the dialog_state to signal that the primary assistant is back in control
-Because of their similarities, we could define a factory function to generate these. Since this is a tutorial, we'll define them each explicitly.
-
-First, make the flight booking assistant dedicated to managing the user journey for updating and canceling flights.
+enter_*: Use the create_entry_node utility to add a ToolMessage, indicating that the new specialized assistant is now in control.
+Assistant: This node combines a prompt with an LLM (Language Learning Model) to handle the current state. It may use a tool, ask the user a question, or return control to the primary assistant.
+_*_safe_tools: These are "read-only" tools that the assistant can use without requiring user confirmation.
+_*_sensitive_tools: These tools have "write" access and require user confirmation. They will be assigned an interrupt_before when compiling the graph.
+leave_skill: This node signals that the primary assistant is back in control by popping the dialog_state.
 """
 
 from langgraph.prebuilt import tools_condition

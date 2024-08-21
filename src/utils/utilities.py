@@ -1,4 +1,5 @@
-"""In this module, we define helper functions to pretty print the messages in the graph while we debug it and to give our tool node error handling (by adding the error to the chat history).
+"""
+In this module, we define helper functions to pretty print the messages in the graph while we debug it and to give our tool node error handling (by adding the error to the chat history).
 
 Functions include:
 1. `handle_tool_error`: Formats error messages for display and adds them to the chat history.
