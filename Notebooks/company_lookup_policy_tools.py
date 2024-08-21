@@ -2,7 +2,7 @@
 from company_policies_agentic_RAG_prep import load_swiss_faq, VectorStoreRetriever
 import openai
 from langchain_core.tools import tool
-from load_config import LoadRAGConfig
+from load_notebook_config import LoadRAGConfig
 
 RAG_CFG = LoadRAGConfig()
 

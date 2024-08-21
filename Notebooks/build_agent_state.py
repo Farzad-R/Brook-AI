@@ -4,9 +4,7 @@ We want to keep track of which sub-graph is in control at any given moment. Whil
 Add a dialog_state list to the State below. Any time a node is run and returns a value for dialog_state, the update_dialog_stack function will be called to determine how to apply the update.
 """
 from typing import Annotated, Literal, Optional
-
 from typing_extensions import TypedDict
-
 from langgraph.graph.message import AnyMessage, add_messages
 
 

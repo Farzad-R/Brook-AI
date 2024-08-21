@@ -6,7 +6,7 @@ The assistant retrieve policy information to answer user questions. Note that en
 import re
 import requests
 import numpy as np
-from load_config import LoadDirectoriesConfig, LoadOpenAIConfig
+from load_notebook_config import LoadDirectoriesConfig, LoadOpenAIConfig
 
 CFG_OPENAI = LoadOpenAIConfig()
 CFG_DIRECTORIES = LoadDirectoriesConfig()

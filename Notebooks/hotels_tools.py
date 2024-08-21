@@ -4,7 +4,7 @@ import sqlite3
 from datetime import date, datetime
 from typing import Optional, Union
 from langchain_core.tools import tool
-from load_config import LoadDirectoriesConfig
+from load_notebook_config import LoadDirectoriesConfig
 CFG_DIRECTORIES = LoadDirectoriesConfig()
 # database will be used throughout this module in flight methods
 db = CFG_DIRECTORIES.local_file
