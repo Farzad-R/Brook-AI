@@ -7,8 +7,9 @@ urls:
   swiss_faq_url: https://storage.googleapis.com/benchmarks-artifacts/travel-db/swiss_faq.md
 
 openai_models:
-  model: gpt-4-turbo
+  # model: gpt-4-turbo
   # model: gpt-3.5-turbo-0125
+  model: gpt-4o-mini
   embedding_model: text-embedding-3-small
 
 RAG:
